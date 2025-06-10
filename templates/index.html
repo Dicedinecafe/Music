@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Queue Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Spotify Queue Manager</h1>
+        
+        <div id="auth-section">
+            <button id="login-btn" class="btn">Login with Spotify</button>
+            <div id="user-info" style="display: none;">
+                <p>Logged in as <span id="username"></span></p>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search for a song...">
+            <button id="search-btn" class="btn">Search</button>
+        </div>
+
+        <div id="results" class="results-container"></div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginBtn = document.getElementById('login-btn');
+        const searchBtn = document.getElementById('search-btn');
+        const searchInput = document.getElementById('search-input');
+        const resultsDiv = document.getElementById('results');
+        const userInfoDiv = document.getElementById('user-info');
+        const usernameSpan = document.getElementById('username');
+
+        // Check if user is logged in
+        function checkLoginStatus() {
+            fetch('/check-auth')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.authenticated) {
+                        loginBtn.style.display = 'none';
+                        userInfoDiv.style.display = 'block';
+                        usernameSpan.textContent = data.username || 'User';
+                    }
+                });
+        }
+
+        // Handle login
+        loginBtn.addEventListener('click', () => {
+            window.location.href = '/login';
+        });
+
+        // Handle search
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+// Add this error handling to your login flow
+async function checkAuth() {
+    try {
+        const res = await fetch('/check-auth');
+        if (!res.ok) throw new Error('Auth check failed');
+        const data = await res.json();
+        
+        if (data.authenticated) {
+            document.getElementById('login-btn').style.display = 'none';
+            document.getElementById('user-info').style.display = 'block';
+        } else {
+            // Force login if token is invalid
+            window.location.href = '/login?force=true'; 
+        }
+    } catch (error) {
+        console.error('Auth error:', error);
+        showError('Please login again');
+    }
+}
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+
+            fetch(`/search?q=${encodeURIComponent(query)}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Search failed');
+                    return response.json();
+                })
+                .then(tracks => {
+                    if (tracks.error) {
+                        resultsDiv.innerHTML = `<div class="error">${tracks.error}</div>`;
+                        return;
+                    }
+
+                    if (tracks.length === 0) {
+                        resultsDiv.innerHTML = '<div class="no-results">No results found</div>';
+                        return;
+                    }
+
+                    resultsDiv.innerHTML = tracks.map(track => `
+                        <div class="track">
+                            ${track.image ? `<img src="${track.image}" alt="${track.name}" class="track-image">` : ''}
+                            <div class="track-info">
+                                <h3>${track.name}</h3>
+                                <p>${track.artist}</p>
+                            </div>
+                            <button class="queue-btn" data-uri="${track.uri}">Queue</button>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    resultsDiv.innerHTML = `<div class="error">${error.message}</div>`;
+                });
+        }
+
+        // Handle queue button clicks
+        resultsDiv.addEventListener('click', (e) => {
+            if (e.target.classList.contains('queue-btn')) {
+                const trackUri = e.target.getAttribute('data-uri');
+                queueTrack(trackUri, e.target);
+            }
+        });
+        async function queueTrack(uri, button) {
+    if (!uri) return;
+
+    const originalText = button.textContent;
+    button.textContent = 'Queuing...';
+    button.disabled = true;
+
+    try {
+        const response = await fetch('/queue', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uri })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Queue failed');
+        }
+        
+        // Success feedback
+        button.textContent = '✓ Queued!';
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+        }, 2000);
+        
+    } catch (error) {
+        button.textContent = 'Failed!';
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+        }, 2000);
+        
+        alert(`Error: ${error.message}\n\nPossible solutions:\n1. Open Spotify on any device\n2. Start playing any song\n3. Try again`);
+    }
+}
+async function queueTrack(uri, button) {
+    const originalText = button.textContent;
+    button.textContent = 'Queuing...';
+    button.disabled = true;
+
+    try {
+        const response = await fetch('/queue', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uri })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(
+                result.error + '\n\n' + 
+                (result.solution || 'Please try again later')
+            );
+        }
+        
+        // Visual feedback
+        button.textContent = '✓ Queued!';
+        button.classList.add('success');
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+            button.classList.remove('success');
+        }, 2000);
+        
+    } catch (error) {
+        button.textContent = 'Failed!';
+        button.classList.add('error');
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+            button.classList.remove('error');
+        }, 2000);
+        
+        alert(error.message);
+    }
+}
+
+        // Check login status on page load
+        checkLoginStatus();
+    </script>
+</body>
+</html>
