@@ -41,6 +41,7 @@ retry_strategy = Retry(
     status_forcelist=[429, 500, 502, 503, 504]
 )
 session_retry.mount("https://", HTTPAdapter(max_retries=retry_strategy))
+print("ENV TEST:", os.getenv('SPOTIFY_CLIENT_ID'), os.getenv('FLASK_SECRET_KEY'))
 
 # Get access token using refresh token
 def get_access_token():
