@@ -9,12 +9,12 @@ import logging
 from flask import Flask, render_template, request, jsonify
 import requests
 from urllib.parse import urlencode
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 # Load environment variables
-load_dotenv()
+#load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
