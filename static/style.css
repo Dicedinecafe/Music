@@ -1,0 +1,223 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #1DB954 0%, #191414 100%);
+    min-height: 100vh;
+    color: #fff;
+    line-height: 1.6;
+    padding-bottom: 4rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Auth Section */
+#auth-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.btn {
+    background-color: #fbeee0;
+    border: 2px solid #422800;
+    border-radius: 30px;
+    box-shadow: #422800 4px 4px 0 0;
+    color: #422800;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 18px;
+    padding: 10px 24px;
+    text-align: center;
+    transition: all 0.2s ease;
+    width: auto;
+}
+
+.btn:hover {
+    background-color: #fff;
+    transform: translateY(-2px);
+    box-shadow: #422800 2px 2px 0 0;
+}
+
+/* Search Container */
+.search-container {
+    display: flex;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+}
+
+#search-input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+#search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#search-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+}
+
+/* Results Container */
+.results-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.track:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.track-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.track-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.track-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track-info p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.queue-btn {
+    background: #1DB954;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.queue-btn:hover {
+    background: #1ed760;
+    transform: scale(1.05);
+}
+
+.queue-btn.success {
+    background: #4CAF50 !important;
+}
+
+.queue-btn.error {
+    background: #f44336 !important;
+}
+
+/* Loading and Error States */
+.loading, .error, .no-results {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    grid-column: 1 / -1;
+    font-weight: 600;
+}
+
+.error {
+    color: #ff6b6b;
+}
+
+/* User Info */
+#user-info {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .search-container {
+        flex-direction: column;
+    }
+
+    .btn, .queue-btn {
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .track {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .track-image {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .track-info {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .queue-btn {
+        align-self: flex-end;
+    }
+}
