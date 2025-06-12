@@ -14,16 +14,26 @@
     <i class="fas fa-home"></i>
     <span>Back to Home</span>
 </a>
+
 <body>
     <div class="container">
         <h1>Dice & Dine Juke Box</h1>
       
-          
-
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search for a song...">
-            <button id="search-btn" class="btn">Search</button>
+        <div class="queue-display">
+            <div class="now-playing">
+                <div class="track-info">
+                    <h3>Now Playing:</h3>
+                    <h4 id="track-name">Loading...</h4>
+                    <p id="artist-name"></p>
+                    <div class="search-container">
+                        <input type="text" id="search-input" placeholder="Search for a song...">
+                        <button id="search-btn" class="btn">Search</button>
+                    </div>
+                </div>
+            </div>
         </div>
+
+       
 
         <div id="results" class="results-container"></div>
     </div>
@@ -272,7 +282,7 @@ async function queueTrack(uri, button) {
 }        
         
     </script>
-
+ 
 <div id="popup" style="
     display: none;
     position: fixed;
@@ -295,6 +305,30 @@ async function queueTrack(uri, button) {
 </div>
 
 <script>
+     async function fetchCurrentTrack() {
+    try {
+        const res = await fetch('/current');
+        const data = await res.json();
+
+        const trackName = document.getElementById('track-name');
+        const artistName = document.getElementById('artist-name');
+
+        if (data.message) {
+            trackName.textContent = data.message;
+            artistName.textContent = '';
+            return;
+        }
+
+        trackName.textContent = data.name || 'No track playing';
+        artistName.textContent = data.artist || '';
+
+    } catch (err) {
+        console.error('Error fetching current track:', err);
+        const trackName = document.getElementById('track-name');
+        trackName.textContent = 'Error loading track';
+    }
+}
+
 function showPopup(message) {
 const popup = document.getElementById('popup');
 popup.textContent = message;
@@ -339,7 +373,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.body.appendChild(iconWrapper);
             }
         });
+        document.addEventListener('DOMContentLoaded', function() {
+    // Add background icons
+    const icons = [
+        'fa-dice-one', 'fa-dice-two', 'fa-dice-three', 'fa-dice-four', 'fa-dice-five', 'fa-dice-six',
+        // ...existing icons...
+    ];
 
+    // Add background icons
+    for (let i = 0; i < 40; i++) {
+        // ...existing background icons code...
+    }
+
+    // Initialize current track display
+    fetchCurrentTrack();
+
+    // Set up auto-refresh for current track
+    const REFRESH_INTERVAL = 100; // 10 seconds
+    setInterval(fetchCurrentTrack, REFRESH_INTERVAL);
+});
 </script>
 
 </body>
