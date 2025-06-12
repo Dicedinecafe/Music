@@ -1,47 +1,47 @@
-/* Reset and Base Styles */
+/* Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-body {
-    justify-content: center;
-    margin: 0;
-    padding: 0;
+  }
+  
+  body {
     font-family: "Luckiest Guy", sans-serif;
     background-color: #e0f7fa;
     font-weight: 400;
-    font-style: normal;
     line-height: 1.6;
     overflow-x: hidden;
     width: 100%;
-}
-.loading {
-    text-align: center;
-    padding: 2rem;
+    justify-content: center;
+  }
+  .empty-queue {
     color: #422800;
     font-family: "Luckiest Guy", sans-serif;
-    font-size: 1.5rem;
-    background-color: #fbeee0;
-    border: 2px solid #422800;
-    border-radius: 30px;
-    box-shadow: #422800 4px 4px 0 0;
-    margin: 20px auto;
-    max-width: 300px;
+    font-size: 1.2rem;
+    padding: 1rem;
+    text-align: center;
+    width: 100%;
 }
-
-.loading::after {
-    content: "...";
-    animation: dots 1.5s steps(5, end) infinite;
-}
-
-@keyframes dots {
-    0%, 20% { content: "."; }
-    40% { content: ".."; }
-    60%, 100% { content: "..."; }
-}
-.back-home {
+  /* Typography & Headers */
+  h1 {
+    color: #664d03;
+    font-size: 5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 1200;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    width: 100%;
+  }
+  
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 20px 20px;
+  }
+  
+  /* Back Button */
+  .back-home {
     position: fixed;
     top: 20px;
     left: 20px;
@@ -59,64 +59,29 @@ body {
     padding: 10px 20px;
     text-decoration: none;
     transition: all 0.3s ease;
-    font-family: "Luckiest Guy", sans-serif;
     z-index: 1000;
-}
-
-.back-home:hover {
+  }
+  .back-home:hover {
     background-color: #fff;
     transform: translateY(-2px);
-}
-
-.back-home:active {
+  }
+  .back-home:active {
     box-shadow: #422800 2px 2px 0 0;
     transform: translate(2px, 2px);
-}
-
-.back-home i {
+  }
+  .back-home i {
     font-size: 18px;
-}
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-.logo-container {
-    text-align: center;
-    margin: 20px auto 40px;
-    padding: 0 20px;
-}
-
-.logo {
-    max-width: 300px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
-}
-
-h1 {
-    color: #664d03;
-    font-size: 10rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    font-weight: 1200;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    width: 100%;
-    
-}
-
-/* Search Container Styles */
-/* Update search container styles */
-.search-container {
+  }
+  
+  /* Search Bar */
+  .search-container {
     display: flex;
     gap: 1rem;
     max-width: 600px;
     margin: 20px auto;
     padding: 0 15px;
-}
-
-#search-input {
+  }
+  #search-input {
     flex: 1;
     padding: 12px 20px;
     border: 2px solid #422800;
@@ -124,10 +89,9 @@ h1 {
     font-size: 18px;
     background-color: #fbeee0;
     color: #422800;
-    min-width: 0; /* Prevents input from overflowing on mobile */
-}
-
-.btn {
+  }
+  .btn,
+  #search-btn {
     background-color: #fbeee0;
     border: 2px solid #422800;
     border-radius: 30px;
@@ -137,33 +101,93 @@ h1 {
     font-weight: 600;
     font-size: 18px;
     padding: 0 18px;
-    white-space: nowrap;
-}
-
-/* Update back-home button styles */
-.back-home {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-}
-
-/* Update container and header styles */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    padding-top: 80px; /* Add space for fixed back button */
-}
-
-/* Results Container Styles */
-.results-container {
+    transition: all 0.3s ease;
+  }
+  .btn:hover,
+  #search-btn:hover {
+    background-color: #fff;
+  }
+  .btn:active,
+  #search-btn:active {
+    box-shadow: #422800 2px 2px 0 0;
+    transform: translate(2px, 2px);
+  }
+  
+  /* Results Grid */
+  .results-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
     padding: 20px;
-}
-.rules-container {
+  }
+  
+  /* Track Card */
+  .track {
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+  }
+  .track:hover {
+    transform: translateY(-5px);
+  }
+  .track-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  .track-info {
+    text-align: center;
+    margin: 10px 0;
+  }
+  .track-info h3 {
+    color: #664d03;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+  }
+  .track-info p {
+    color: #666;
+    font-size: 1rem;
+  }
+  
+  /* Queue Button */
+  .queue-btn {
+    background-color: #fbeee0;
+    border: 2px solid #422800;
+    border-radius: 30px;
+    box-shadow: #422800 4px 4px 0 0;
+    color: #422800;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 8px 20px;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+  }
+  .queue-btn:hover {
+    background-color: #fff;
+  }
+  .queue-btn:active {
+    box-shadow: #422800 2px 2px 0 0;
+    transform: translate(2px, 2px);
+  }
+  .queue-btn.success {
+    background-color: #4caf50;
+    color: white;
+  }
+  .queue-btn.error {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  /* Rules Section */
+  .rules-container {
     background-color: #fbeee0;
     border: 2px solid #422800;
     border-radius: 30px;
@@ -171,311 +195,42 @@ h1 {
     padding: 2rem;
     margin: 2rem auto;
     max-width: 1000px;
-}
-
-.rules-title {
+  }
+  .rules-title {
     color: #422800;
     text-align: center;
     font-size: 1.8rem;
     margin-bottom: 2rem;
-    font-family: "Luckiest Guy", sans-serif;
-}
-
-.rules-grid {
+  }
+  .rules-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
-}
-
-.rule-item {
+  }
+  .rule-item {
     background-color: white;
     border: 2px solid #422800;
     border-radius: 15px;
     padding: 1.2rem;
     box-shadow: #422800 2px 2px 0 0;
     transition: transform 0.2s ease;
-}
-
-.rule-item:hover {
+  }
+  .rule-item:hover {
     transform: translateY(-3px);
-}
-
-.rule-item h3 {
+  }
+  .rule-item h3 {
     color: #422800;
-    font-family: "Luckiest Guy", sans-serif;
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
-}
-
-.rule-item p {
+  }
+  .rule-item p {
     color: #664d03;
     font-size: 1rem;
     line-height: 1.4;
-    margin: 0;
-}
-
-@media (max-width: 768px) {
-    .rules-container {
-        padding: 1rem;
-        margin: 1rem;
-    }
-    .logo-container {
-        margin: 10px auto 20px;
-    }
-    
-    .logo {
-        max-width: 200px;
-    }
-    .rules-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .rules-title {
-        font-size: 1.5rem;
-    }
-}
-.track {
-    background-color: #f5f5f5;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.3s ease;
-}
-
-.track:hover {
-    transform: translateY(-5px);
-}
-
-.track-image {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-
-.track-info {
-    text-align: center;
-    margin: 10px 0;
-}
-
-.track-info h3 {
-    color: #664d03;
-    margin-bottom: 5px;
-    font-size: 1.2rem;
-}
-
-.track-info p {
-    color: #666;
-    font-size: 1rem;
-}
-
-/* Queue Button Styles */
-.queue-btn {
-    background-color: #fbeee0;
-    border: 2px solid #422800;
-    border-radius: 30px;
-    box-shadow: #422800 4px 4px 0 0;
-    color: #422800;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 8px 20px;
-    text-align: center;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-}
-
-.queue-btn:hover {
-    background-color: #fff;
-}
-
-.queue-btn:active {
-    box-shadow: #422800 2px 2px 0 0;
-    transform: translate(2px, 2px);
-}
-
-.queue-btn.success {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.queue-btn.error {
-    background-color: #f44336;
-    color: white;
-}
-
-/* Popup Styles */
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    justify-content: center;
-    margin: 0;
-    padding: 0;
-    font-family: "Luckiest Guy", sans-serif;
-    background-color: #e0f7fa;
-    font-weight: 400;
-    font-style: normal;
-    line-height: 1.6;
-    overflow-x: hidden;
-    width: 100%;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-h1 {
-    color: #664d03;
-    font-size: 5rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    font-weight: 1200;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    width: 100%;
-}
-
-/* Search Container Styles */
-.search-container {
-    display: flex;
-    gap: 1rem;
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 0 15px;
-}
-
-#search-input {
-    flex: 1;
-    padding: 12px 20px;
-    border: 2px solid #422800;
-    border-radius: 30px;
-    font-size: 18px;
-    background-color: #fbeee0;
-    color: #422800;
-}
-
-#search-btn {
-    background-color: #fbeee0;
-    border: 2px solid #422800;
-    border-radius: 30px;
-    box-shadow: #422800 4px 4px 0 0;
-    color: #422800;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 18px;
-    padding: 0 18px;
-    text-align: center;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-#search-btn:hover {
-    background-color: #fff;
-}
-
-#search-btn:active {
-    box-shadow: #422800 2px 2px 0 0;
-    transform: translate(2px, 2px);
-}
-
-/* Results Container Styles */
-.results-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-
-.track {
-    background-color: #f5f5f5;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.3s ease;
-}
-
-.track:hover {
-    transform: translateY(-5px);
-}
-
-.track-image {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-
-.track-info {
-    text-align: center;
-    margin: 10px 0;
-}
-
-.track-info h3 {
-    color: #664d03;
-    margin-bottom: 5px;
-    font-size: 1.2rem;
-}
-
-.track-info p {
-    color: #666;
-    font-size: 1rem;
-}
-
-/* Queue Button Styles */
-.queue-btn {
-    background-color: #fbeee0;
-    border: 2px solid #422800;
-    border-radius: 30px;
-    box-shadow: #422800 4px 4px 0 0;
-    color: #422800;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 8px 20px;
-    text-align: center;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-}
-
-.queue-btn:hover {
-    background-color: #fff;
-}
-
-.queue-btn:active {
-    box-shadow: #422800 2px 2px 0 0;
-    transform: translate(2px, 2px);
-}
-
-.queue-btn.success {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.queue-btn.error {
-    background-color: #f44336;
-    color: white;
-}
-
-/* Popup Styles */
-
-.popup {
+  }
+  
+  /* Popup */
+  .popup {
     display: none;
     position: fixed;
     top: 20%;
@@ -490,100 +245,222 @@ h1 {
     z-index: 9999;
     max-width: 90%;
     text-align: center;
-}
-
-.popup .message {
+  }
+  .popup .message {
     font-size: 1.2rem;
     margin-bottom: 15px;
     font-weight: bold;
-}
-
-.popup .timer {
+  }
+  .popup .timer {
     font-size: 2.5rem;
     font-weight: bold;
     color: #422800;
     margin-top: 10px;
-}
-/* Background Icons */
-.background-icon {
+  }
+  
+  /* Loading Indicator */
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: #422800;
+    font-size: 1.5rem;
+    background-color: #fbeee0;
+    border: 2px solid #422800;
+    border-radius: 30px;
+    box-shadow: #422800 4px 4px 0 0;
+    margin: 20px auto;
+    max-width: 300px;
+  }
+  .loading::after {
+    content: "...";
+    animation: dots 1.5s steps(5, end) infinite;
+  }
+  @keyframes dots {
+    0%, 20% { content: "."; }
+    40% { content: ".."; }
+    60%, 100% { content: "..."; }
+  }
+  
+  /* Decorative Background Icons */
+  .background-icon {
     position: absolute;
     pointer-events: none;
     opacity: 0.15;
     z-index: -1;
-    font-size: 28px;
     color: #d4af37;
     transition: transform 0.3s ease;
-}
-
-.background-icon.large {
+  }
+  .background-icon.large {
     font-size: 36px;
-}
-
-.background-icon.small {
+  }
+  .background-icon.small {
     font-size: 20px;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
+  }
+  
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      padding: 0 10px;
+    }
     .container {
-        padding-top: 100px; /* Increase top padding on mobile */
+      padding-top: 100px;
     }
-
     .search-container {
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
-        padding: 0 10px;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      padding: 0 10px;
     }
-
-    #search-input {
-        width: 100%;
-        height: 60px; /* Make both elements the same height */
-        font-size: 16px;
-        padding: 15px 20px;
+    #search-input,
+    .btn {
+      width: 100%;
+      height: 60px;
+      font-size: 16px;
+      padding: 15px 20px;
     }
     .btn {
-        width: 100%;
-        padding: 15px 20px;
-        font-size: 16px;
-        height: 60px; /* Match the height of the search input */
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-
-
-    h1 {
-        font-size: 3rem; /* Smaller title on mobile */
-        margin-bottom: 1.5rem;
-        padding: 0 10px;
-    }
-
     .back-home {
-        top: 10px;
-        left: 10px;
-        padding: 8px 15px;
-        font-size: 14px;
+      top: 10px;
+      left: 10px;
+      padding: 8px 15px;
+      font-size: 14px;
+    }
+    .rules-container {
+      padding: 1rem;
+      margin: 1rem;
+    }
+    .rules-title {
+      font-size: 1.5rem;
+    }
+    .rules-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+  /* Queue Page Layout */
+.queue-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    background-color: #fbeee0;
+    border: 2px solid #422800;
+    border-radius: 30px;
+    box-shadow: #422800 4px 4px 0 0;
+    padding: 2rem;
+}
+
+.now-playing {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.album-container {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #422800;
+    box-shadow: #422800 4px 4px 0 0;
+}
+
+.rotating-album {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.qr-section {
+    text-align: center;
+}
+
+.qr-section h2 {
+    color: #422800;
+    font-family: "Luckiest Guy", sans-serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.qr-code {
+    width: 200px;
+    height: 200px;
+    padding: 1rem;
+    background: white;
+    border: 2px solid #422800;
+    border-radius: 15px;
+    box-shadow: #422800 4px 4px 0 0;
+}
+
+.upcoming-tracks {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.upcoming-tracks h2 {
+    color: #422800;
+    font-family: "Luckiest Guy", sans-serif;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.queue-circles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+.queue-item {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #422800;
+    box-shadow: #422800 2px 2px 0 0;
+    animation: rotate 15s linear infinite;
+}
+
+.queue-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .queue-display {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .album-container {
+        width: 200px;
+        height: 200px;
+    }
+
+    .qr-code {
+        width: 150px;
+        height: 150px;
+    }
+
+    .queue-item {
+        width: 80px;
+        height: 80px;
     }
 }
-
-/* Background Icons */
-.background-icon {
-    position: absolute;
-    pointer-events: none;
-    opacity: 0.15;
-    z-index: -1;
-    font-size: 28px;
-    color: #d4af37;
-    transition: transform 0.3s ease;
-}
-
-.background-icon.large {
-    font-size: 36px;
-}
-
-.background-icon.small {
-    font-size: 20px;
-}
-
-/* Responsive Styles */
