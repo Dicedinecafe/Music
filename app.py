@@ -67,6 +67,36 @@ def get_access_token():
 @app.route('/')
 def index():
     return render_template('index.html')  # Make sure to create a simple index.html for UI
+@app.route('/current')
+def current_playing():
+    access_token = get_access_token()
+    if not access_token:
+        return jsonify({"error": "Failed to authorize with Spotify"}), 500
+    try:
+        response = session_retry.get(
+            f"{API_BASE_URL}/me/player/currently-playing",
+            headers={'Authorization': f"Bearer {access_token}"}
+        )
+        if response.status_code == 204:
+            return jsonify({"message": "No track currently playing"}), 204
+        response.raise_for_status()
+        data = response.json()
+        if not data or "item" not in data:
+            return jsonify({"message": "No track currently playing"}), 204
+        track = data["item"]
+        current_track = {
+            "name": track["name"],
+            "artist": track["artists"][0]["name"],
+            "image": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
+            "uri": track["uri"],
+            "progress_ms": data.get("progress_ms", 0),
+            "duration_ms": track.get("duration_ms", 0),
+            "is_playing": data.get("is_playing", False),
+        }
+        return jsonify(current_track)
+    except Exception as e:
+        logger.error(f"Current track error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 # Search route
 @app.route('/search')
