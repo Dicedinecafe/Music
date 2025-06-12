@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice & Dine Juke Box</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/jpeg" href="https://lh3.googleusercontent.com/d/1euJelHOBxXp0_U-D6sa38DTn7EKsaOqG=s800">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<a href="https://dicedinecafe.com" class="back-home">
+    <i class="fas fa-home"></i>
+    <span>Back to Home</span>
+</a>
+
+<body>
+    <div class="container">
+        <h1>Dice & Dine Juke Box</h1>
+      
+        <div class="queue-display">
+            <div class="now-playing">
+                <div class="track-info">
+                    <h3>Now Playing:</h3>
+                    <h4 id="track-name">Loading...</h4>
+                    <p id="artist-name"></p>
+                    <div class="search-container">
+                        <input type="text" id="search-input" placeholder="Search for a song...">
+                        <button id="search-btn" class="btn">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+
+        <div id="results" class="results-container"></div>
+    </div>
+    <div class="rules-container">
+        <h2 class="rules-title">🎵 Jukebox Rules – Let the Music Play Fairly! 🎶</h2>
+        <div class="rules-grid">
+            <div class="rule-item">
+                <h3>One Song at a Time</h3>
+                <p>Let everyone have a chance—please queue only one song at a time.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Volume is Set</h3>
+                <p>The jukebox volume is pre-set by management.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Keep It Clean</h3>
+                <p>No explicit content or offensive language. Let's keep the vibe friendly for all ages.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Respect the Queue</h3>
+                <p>Songs play in the order they were added.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Request Limits</h3>
+                <p>1 song per person every 5 minutes to keep it fair for everyone.</p>
+            </div>
+            <div class="rule-item">
+                <h3>Management Control</h3>
+                <p>We reserve the right to skip or mute any song if it disrupts the environment.</p>
+            </div>
+
+            <div class="rule-item">
+                <h3>Enjoy & Share the Vibe</h3>
+                <p>Feel free to sing along or vibe quietly—but no shouting over others' experiences.</p>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        const searchBtn = document.getElementById('search-btn');
+        const searchInput = document.getElementById('search-input');
+        const resultsDiv = document.getElementById('results');
+
+        // Handle search
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+       // Replace the existing performSearch function
+function performSearch() {
+    const query = searchInput.value.trim();
+    if (!query) {
+    showPopup("Please enter a song or artist name to search");
+        searchInput.focus();
+        return;
+    }
+    resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+
+    fetch(`/search?q=${encodeURIComponent(query)}&limit=50`) // Increased limit to 50
+        .then(response => response.json())
+        .then(tracks => {
+            if (tracks.error) {
+                resultsDiv.innerHTML = `<div class="error">${tracks.error}</div>`;
+                return;
+            }
+
+            if (tracks.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results">No results found</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = tracks.map(track => `
+                <div class="track">
+                    ${track.image ? `<img src="${track.image}" alt="${track.name}" class="track-image">` : ''}
+                    <div class="track-info">
+                        <h3>${track.name}</h3>
+                        <p>${track.artist}</p>
+                    </div>
+                    <button class="queue-btn" data-uri="${track.uri}">Queue</button>
+                </div>
+            `).join('');
+
+            // Add lazy loading for images
+            const images = resultsDiv.getElementsByTagName('img');
+            for (let img of images) {
+                img.loading = 'lazy';
+            }
+        })
+        .catch(error => {
+            resultsDiv.innerHTML = `<div class="error">${error.message}</div>`;
+        });
+}
+
+        // Handle queue button clicks
+        resultsDiv.addEventListener('click', (e) => {
+            if (e.target.classList.contains('queue-btn')) {
+                const trackUri = e.target.getAttribute('data-uri');
+                queueTrack(trackUri, e.target);
+            }
+        });
+
+       // Replace the existing queueTrack function with this version
+async function queueTrack(uri, button) {
+    if (!canQueueTrack()) {
+        showPopup(getTimeLeftMessage());
+        return;
+    }
+
+    const originalText = button.textContent;
+    button.textContent = 'Queuing...';
+    button.disabled = true;
+
+    try {
+        const response = await fetch('/queue', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uri })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Queue failed');
+        }
+
+        incrementQueueCount();
+
+        button.textContent = '✓ Queued!';
+        button.classList.add('success');
+        button.disabled = true;
+        // Remove the setTimeout that was resetting the button
+
+    } catch (error) {
+        button.textContent = 'Failed!';
+        button.classList.add('error');
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+            button.classList.remove('error');
+        }, 2000);
+
+        showPopup(error.message);
+    }
+}
+
+        const QUEUE_LIMIT = 1;
+const LIMIT_DURATION_MINUTES = 5;
+
+// Store queue data in localStorage
+function getQueueData() {
+    return JSON.parse(localStorage.getItem('queueData') || '{}');
+}
+
+function setQueueData(data) {
+    localStorage.setItem('queueData', JSON.stringify(data));
+}
+
+// Check how many songs user has queued
+function getQueueCount() {
+    const data = getQueueData();
+    return data.count || 0;
+}
+
+// Save a new queued song and time
+function incrementQueueCount() {
+    const data = getQueueData();
+    const now = Date.now();
+    const count = (data.count || 0) + 1;
+    const firstTime = data.firstTime || now;
+
+    setQueueData({ count, firstTime });
+}
+
+// Check if user can queue
+function canQueueTrack() {
+    const data = getQueueData();
+    const now = Date.now();
+
+    if (!data.firstTime) return true;
+
+    const minutesPassed = (now - data.firstTime) / 60000;
+    if (minutesPassed >= LIMIT_DURATION_MINUTES) {
+        // Reset after 30 minutes
+        localStorage.removeItem('queueData');
+        return true;
+    }
+
+    return getQueueCount() < QUEUE_LIMIT;
+}
+
+// Message to show in popup
+function getTimeLeftMessage() {
+    const data = getQueueData();
+    const now = Date.now();
+    const minutesPassed = (now - data.firstTime) / 60000;
+    const minutesLeft = Math.ceil(LIMIT_DURATION_MINUTES - minutesPassed);
+    return `Please wait ${minutesLeft} minute(s) before adding more songs.`;
+}
+
+// Main function
+async function queueTrack(uri, button) {
+    if (!canQueueTrack()) {
+        showPopup(getTimeLeftMessage());
+        return;
+    }
+
+    const originalText = button.textContent;
+    button.textContent = 'Queuing...';
+    button.disabled = true;
+
+    try {
+        const response = await fetch('/queue', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uri })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Queue failed');
+        }
+
+        incrementQueueCount();
+
+        button.textContent = '✓ Queued!';
+        button.classList.add('success');
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+            button.classList.remove('success');
+        }, 2000);
+
+    } catch (error) {
+        button.textContent = 'Failed!';
+        button.classList.add('error');
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+            button.classList.remove('error');
+        }, 2000);
+
+        showPopup(error.message);
+    }
+}        
+        
+    </script>
+ 
+<div id="popup" style="
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fbeee0;
+    border: 2px solid #422800;
+    border-radius: 30px;
+    box-shadow: #422800 4px 4px 0 0;
+    color: #422800;
+    padding: 1.5rem 2rem;
+    z-index: 9999;
+    max-width: 90%;
+    text-align: center;
+    font-family: 'Luckiest Guy', sans-serif;
+">
+    <div id="popup-message" style="font-size: 1.1rem; margin-bottom: 10px;"></div>
+    <div id="popup-timer" style="font-size: 2rem; font-weight: bold;"></div>
+</div>
+
+<script>
+     async function fetchCurrentTrack() {
+    try {
+        const res = await fetch('/current');
+        const data = await res.json();
+
+        const trackName = document.getElementById('track-name');
+        const artistName = document.getElementById('artist-name');
+
+        if (data.message) {
+            trackName.textContent = data.message;
+            artistName.textContent = '';
+            return;
+        }
+
+        trackName.textContent = data.name || 'No track playing';
+        artistName.textContent = data.artist || '';
+
+    } catch (err) {
+        console.error('Error fetching current track:', err);
+        const trackName = document.getElementById('track-name');
+        trackName.textContent = 'Error loading track';
+    }
+}
+
+function showPopup(message) {
+const popup = document.getElementById('popup');
+popup.textContent = message;
+popup.style.display = 'block';
+
+setTimeout(() => {
+    popup.style.display = 'none';
+}, 1000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+            const icons = [
+              'fa-dice-one', 'fa-dice-two', 'fa-dice-three', 'fa-dice-four', 'fa-dice-five', 'fa-dice-six',
+                'fa-chess', 'fa-puzzle-piece', 'fa-chess-knight', 'fa-chess-queen', 'fa-trophy', 
+                'fa-gamepad', 'fa-chess-board', 'fa-dice',
+                'fa-burger', 'fa-pizza-slice', 'fa-ice-cream', 'fa-cookie', 'fa-bacon',
+                'fa-bread-slice', 'fa-cheese', 'fa-egg', 'fa-cookie-bite',
+                'fa-mug-hot', 'fa-coffee', 'fa-glass-water', 'fa-martini-glass',
+                'fa-wine-glass', 'fa-beer-mug-empty', 'fa-whiskey-glass',
+                'fa-utensils', 'fa-plate-wheat', 'fa-kitchen-set', 'fa-bell-concierge',
+                'fa-fire-burner'
+            ];
+
+            for (let i = 0; i < 40; i++) {
+                const iconWrapper = document.createElement('div');
+                const sizeClass = Math.random() < 0.5 ? 'large' : Math.random() < 0.10 ? 'small' : '';
+                iconWrapper.className = `background-icon ${sizeClass}`;
+
+                const left = Math.random() * 95;
+                const top = Math.random() * 95;
+                const rotate = Math.random() * 360;
+                const scale = 1.0 + Math.random() * 0.8;
+
+                iconWrapper.style.left = `${left}%`;
+                iconWrapper.style.top = `${top}%`;
+                iconWrapper.style.transform = `rotate(${rotate}deg) scale(${scale})`;
+
+                const icon = document.createElement('i');
+                icon.className = `fas ${icons[Math.floor(Math.random() * icons.length)]}`;
+                iconWrapper.appendChild(icon);
+
+                document.body.appendChild(iconWrapper);
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+    // Add background icons
+    const icons = [
+        'fa-dice-one', 'fa-dice-two', 'fa-dice-three', 'fa-dice-four', 'fa-dice-five', 'fa-dice-six',
+        // ...existing icons...
+    ];
+
+    // Add background icons
+    for (let i = 0; i < 40; i++) {
+        // ...existing background icons code...
+    }
+
+    // Initialize current track display
+    fetchCurrentTrack();
+
+    // Set up auto-refresh for current track
+    const REFRESH_INTERVAL = 100; // 10 seconds
+    setInterval(fetchCurrentTrack, REFRESH_INTERVAL);
+});
+</script>
+
+</body>
+</html>
