@@ -41,6 +41,10 @@
         <h2 class="rules-title">🎵 Jukebox Rules – Let the Music Play Fairly! 🎶</h2>
         <div class="rules-grid">
             <div class="rule-item">
+                <h3>Stick to the Vibe</h3>
+                <p>Only English and Arabic songs, please—let’s keep the mood fun and familiar for everyone.</p>
+            </div>            
+            <div class="rule-item">
                 <h3>One Song at a Time</h3>
                 <p>Let everyone have a chance—please queue only one song at a time.</p>
             </div>
@@ -325,7 +329,7 @@ async function queueTrack(uri, button) {
     } catch (err) {
         console.error('Error fetching current track:', err);
         const trackName = document.getElementById('track-name');
-        trackName.textContent = 'Error loading track';
+        trackName.textContent = 'Nothing Playing Right Now';
     }
 }
 
