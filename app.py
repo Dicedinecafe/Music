@@ -3,18 +3,15 @@ from urllib3.exceptions import NotOpenSSLWarning
 warnings.filterwarnings("ignore", category=NotOpenSSLWarning)
 
 import os
-import time
+import re
 import base64
 import logging
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, abort
 import requests
 from urllib.parse import urlencode
-#from dotenv import load_dotenv
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-# Load environment variables
-#load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -25,9 +22,9 @@ app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY').encode()
 
 # Spotify credentials
-CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
-CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
-REFRESH_TOKEN = os.getenv('SPOTIFY_REFRESH_TOKEN')
+CLIENT_ID = '4781e6fbedae431dbbc4c586fcce9d06'
+CLIENT_SECRET = '09fcf15964624fc4a616abf76f2c4371'
+REFRESH_TOKEN = 'AQAC0LbZpQo6A78s5D5PMTjvbMRqwsiVaIshd8VXkKEioa6emtoJfhukyFH1d1yK08hYyyAXypIkErZ_FX9tkIvL68gHoyHeE7TfLfzGTujhsyWvzkJ22WuQ600bo7CNIGU'
 
 # Spotify endpoints
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
@@ -41,7 +38,28 @@ retry_strategy = Retry(
     status_forcelist=[429, 500, 502, 503, 504]
 )
 session_retry.mount("https://", HTTPAdapter(max_retries=retry_strategy))
-print("ENV TEST:", os.getenv('SPOTIFY_CLIENT_ID'), os.getenv('FLASK_SECRET_KEY'))
+
+# Restrict access to local network
+ALLOWED_PUBLIC_IPS = ['109.177.122.196'] # Change this if your router uses another subnet
+
+@app.before_request
+def restrict_to_public_ip():
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    logger.info(f"Request from IP: {ip}")
+    
+def restrict_to_public_ip():
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    logger.info(f"Incoming request from IP: {ip}")
+    if ip not in ALLOWED_PUBLIC_IPS:
+        abort(403, description="Access restricted to café Wi-Fi only.")
+
+# Allow only Arabic or English songs
+def is_arabic_or_english(text):
+    arabic_re = re.compile(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]')
+    latin_re = re.compile(r'[a-zA-Z]')
+    has_arabic = bool(arabic_re.search(text))
+    has_latin = bool(latin_re.search(text))
+    return has_arabic or has_latin
 
 # Get access token using refresh token
 def get_access_token():
@@ -57,16 +75,15 @@ def get_access_token():
         }
         response = session_retry.post(TOKEN_URL, headers=headers, data=data)
         response.raise_for_status()
-        token_data = response.json()
-        return token_data['access_token']
+        return response.json()['access_token']
     except Exception as e:
         logger.error(f"Access token retrieval failed: {str(e)}")
         return None
 
-# Home route
 @app.route('/')
 def index():
-    return render_template('index.html')  # Make sure to create a simple index.html for UI
+    return render_template('index.html')
+
 @app.route('/current')
 def current_playing():
     access_token = get_access_token()
@@ -98,7 +115,6 @@ def current_playing():
         logger.error(f"Current track error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-# Search route
 @app.route('/search')
 def search():
     query = request.args.get('q')
@@ -117,17 +133,24 @@ def search():
         )
         response.raise_for_status()
         tracks = response.json().get('tracks', {}).get('items', [])
-        return jsonify([{
-            "name": track["name"],
-            "artist": track["artists"][0]["name"],
-            "uri": track["uri"],
-            "image": track["album"]["images"][0]["url"] if track["album"]["images"] else None
-        } for track in tracks])
+
+        filtered_tracks = []
+        for track in tracks:
+            title = track["name"]
+            artist = track["artists"][0]["name"]
+            if is_arabic_or_english(f"{title} {artist}"):
+                filtered_tracks.append({
+                    "name": title,
+                    "artist": artist,
+                    "uri": track["uri"],
+                    "image": track["album"]["images"][0]["url"] if track["album"]["images"] else None
+                })
+
+        return jsonify(filtered_tracks)
     except Exception as e:
         logger.error(f"Search error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-# Queue track route
 @app.route('/queue', methods=['POST'])
 def queue_track():
     data = request.get_json()
@@ -139,7 +162,17 @@ def queue_track():
         return jsonify({"error": "Failed to authorize with Spotify"}), 500
 
     try:
-        # Check active devices
+        track_id = data['uri'].split(':')[-1]
+        track_info_response = session_retry.get(
+            f"{API_BASE_URL}/tracks/{track_id}",
+            headers={'Authorization': f"Bearer {access_token}"}
+        )
+        track_info = track_info_response.json()
+        title = track_info.get("name", "")
+        artist = track_info["artists"][0]["name"]
+        if not is_arabic_or_english(f"{title} {artist}"):
+            return jsonify({"error": "Only English or Arabic songs are allowed."}), 403
+
         devices_response = session_retry.get(
             f"{API_BASE_URL}/me/player/devices",
             headers={'Authorization': f"Bearer {access_token}"},
@@ -152,7 +185,6 @@ def queue_track():
                 "solution": "Open Spotify on any device and start playback"
             }), 404
 
-        # Queue the track
         queue_response = session_retry.post(
             f"{API_BASE_URL}/me/player/queue?uri={data['uri']}",
             headers={'Authorization': f"Bearer {access_token}"},
@@ -180,6 +212,5 @@ def queue_track():
     except Exception as e:
         return jsonify({"error": "Unexpected error", "details": str(e)}), 500
 
-# Run the app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
