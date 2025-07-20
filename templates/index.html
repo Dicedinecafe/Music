@@ -1,402 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dice & Dine Juke Box</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/jpeg" href="https://lh3.googleusercontent.com/d/1euJelHOBxXp0_U-D6sa38DTn7EKsaOqG=s800">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <title>Dice&Dine Music Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/static/style.css">
+    
 </head>
-<a href="https://dicedinecafe.com" class="back-home">
-    <i class="fas fa-home"></i>
-    <span>Back to Home</span>
-</a>
-
 <body>
+    <!-- Cooldown Modal -->
+    <div class="modal-overlay" id="cooldownModal">
+        <div class="modal">
+            <h3>Please Wait</h3>
+            <p id="cooldownMessage">Please wait <span id="cooldownTime">10</span> minutes before adding another song.</p>
+            <button class="modal-close" onclick="closeCooldownModal()">OK</button>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>Dice & Dine Juke Box</h1>
-      
-        <div class="queue-display">
+        <div class="header">
+          <a class="back-btn" href="https://dicedinecafe.com">‹</a>
+          
+             <a href="https://dicedinecafe.com" class="logo">
+              <svg width="240" height="40" viewBox="0 0 217 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M45.8651 2.34333C44.4119 0.895556 42.4027 0 40.1827 0H32.1461L24.1096 8C24.1096 5.79 23.2099 3.79 21.7556 2.34333C20.3023 0.895556 18.2932 0 16.0731 0H8.03653L0 8V24H16.0731L24.1096 16V24H40.1827L48.2192 16V8C48.2192 5.79 47.3195 3.79 45.8651 2.34333ZM12.0548 16C9.83582 16 8.03653 14.2089 8.03653 12C8.03653 9.79111 9.83582 8 12.0548 8C14.2738 8 16.0731 9.79111 16.0731 12C16.0731 14.2089 14.2738 16 12.0548 16ZM36.1644 16C33.9454 16 32.1461 14.2089 32.1461 12C32.1461 9.79111 33.9454 8 36.1644 8C38.3834 8 40.1827 9.79111 40.1827 12C40.1827 14.2089 38.3834 16 36.1644 16Z" fill="#00E6AA"/>
+<path d="M74.973 3.37054C73.8255 2.2961 72.4839 1.47054 70.9503 0.892765C69.4155 0.316098 67.7401 0.0283203 65.923 0.0283203H56.2747V23.9861H65.991C67.7859 23.9861 69.4512 23.6916 70.9849 23.1039C72.5196 22.5161 73.8535 21.6894 74.9897 20.6261C76.126 19.5628 77.0067 18.2961 77.6329 16.8261C78.2568 15.355 78.5704 13.7494 78.5704 12.0072C78.5704 10.265 78.2568 8.63054 77.6329 7.17165C77.0078 5.71276 76.1204 4.4461 74.973 3.37165V3.37054ZM72.1948 15.9094C71.6043 17.0183 70.7627 17.8605 69.6722 18.4383C68.5806 19.015 67.3081 19.3039 65.8538 19.3039H61.6268V4.67721H65.8538C67.3093 4.67721 68.575 4.97165 69.6544 5.55943C70.7337 6.14721 71.5753 6.98499 72.1781 8.07165C72.7797 9.15721 73.081 10.4583 73.081 11.9739C73.081 13.4894 72.7853 14.8017 72.1948 15.9094Z" fill="#2D524A"/>
+<path d="M83.6702 0.373291C82.8811 0.373291 82.227 0.635513 81.7125 1.15885C81.1968 1.68218 80.9401 2.33774 80.9401 3.12329C80.9401 3.90885 81.1979 4.53773 81.7125 5.07218C82.2281 5.60662 82.8811 5.8744 83.6702 5.8744C84.4594 5.8744 85.1068 5.60662 85.6113 5.07218C86.1158 4.53773 86.3681 3.88774 86.3681 3.12329C86.3681 2.35885 86.1147 1.68218 85.6113 1.15885C85.1057 0.634402 84.4594 0.373291 83.6702 0.373291Z" fill="#2D524A"/>
+<path d="M86.1717 8.07007H81.1377V23.9878H86.1717V8.07007Z" fill="#2D524A"/>
+<path d="M99.3505 19.0911C98.8348 19.32 98.2477 19.4344 97.5902 19.4344C96.8882 19.4344 96.2519 19.2711 95.6816 18.9433C95.1123 18.6155 94.6669 18.1689 94.3488 17.6C94.0307 17.0333 93.8711 16.3767 93.8711 15.6344C93.8711 14.8922 94.0307 14.2422 94.3488 13.6867C94.6669 13.13 95.1056 12.6933 95.6659 12.3755C96.2251 12.0589 96.8669 11.9 97.5902 11.9C98.2253 11.9 98.7912 11.9989 99.2835 12.1955C99.778 12.3922 100.21 12.6989 100.584 13.1122L103.809 9.90332C102.997 9.0511 102.069 8.41221 101.028 7.98665C99.9867 7.5611 98.8404 7.34888 97.5902 7.34888C95.9238 7.34888 94.4203 7.70888 93.082 8.42999C91.7437 9.14999 90.6855 10.1378 89.9075 11.3933C89.1284 12.65 88.7389 14.0733 88.7389 15.6678C88.7389 17.2622 89.1229 18.6589 89.8908 19.9255C90.6576 21.1922 91.7113 22.1855 93.0496 22.9055C94.3879 23.6255 95.878 23.9867 97.5244 23.9867C98.818 23.9867 99.9923 23.7622 101.045 23.3155C102.099 22.8678 103.041 22.2078 103.874 21.3344L100.683 18.1244C100.309 18.54 99.8661 18.8611 99.3505 19.0911Z" fill="#2D524A"/>
+<path d="M119.011 8.36443C117.804 7.68777 116.411 7.34888 114.833 7.34888C113.255 7.34888 111.751 7.70888 110.457 8.42999C109.162 9.14999 108.137 10.1378 107.38 11.3933C106.624 12.65 106.245 14.0733 106.245 15.6678C106.245 17.2622 106.629 18.6922 107.397 19.9589C108.164 21.2255 109.222 22.2133 110.572 22.9222C111.921 23.6311 113.461 23.9867 115.195 23.9867C116.533 23.9867 117.762 23.7567 118.88 23.2989C119.999 22.84 120.953 22.1533 121.742 21.2355L118.98 18.4855C118.496 19.0322 117.937 19.44 117.302 19.7133C116.666 19.9867 115.953 20.1233 115.163 20.1233C114.308 20.1233 113.567 19.9433 112.942 19.5833C112.317 19.2233 111.834 18.7111 111.495 18.0433C111.381 17.8222 111.288 17.5844 111.213 17.3344L118.976 17.3155L122.665 17.3067C122.752 16.8922 122.813 16.5267 122.846 16.21C122.879 15.8933 122.895 15.5933 122.895 15.3089C122.895 13.7589 122.549 12.3833 121.859 11.1822C121.169 9.98221 120.22 9.04332 119.013 8.36665L119.011 8.36443ZM111.213 13.8933C111.28 13.6633 111.362 13.4455 111.46 13.2444C111.778 12.59 112.227 12.0822 112.809 11.7211C113.39 11.3611 114.076 11.1811 114.865 11.1811C115.611 11.1811 116.242 11.34 116.757 11.6567C117.272 11.9744 117.662 12.4322 117.926 13.0333C118.037 13.2855 118.124 13.5667 118.192 13.8744L111.214 13.8944L111.213 13.8933Z" fill="#2D524A"/>
+<path d="M132.845 7.93887C132.635 7.56554 132.531 7.13887 132.531 6.65554C132.531 6.08665 132.746 5.60887 133.175 5.22443C133.605 4.84109 134.15 4.64998 134.809 4.64998C135.469 4.64998 136.005 4.80332 136.478 5.11109C136.951 5.41776 137.408 5.86665 137.849 6.45887L141.22 3.26887C140.888 2.7211 140.415 2.19998 139.798 1.70665C139.182 1.21221 138.454 0.807762 137.618 0.489985C136.781 0.172207 135.823 0.012207 134.744 0.012207C133.356 0.012207 132.138 0.314429 131.093 0.916651C130.047 1.51887 129.221 2.31998 128.615 3.31776C128.009 4.31554 127.706 5.40554 127.706 6.58998C127.706 7.57665 127.894 8.48109 128.267 9.30221C128.466 9.73998 128.733 10.1911 129.062 10.6566C127.925 11.2911 127.044 12.0689 126.416 12.9866C125.646 14.1166 125.259 15.4044 125.259 16.85C125.259 18.1878 125.585 19.4 126.235 20.4844C126.883 21.57 127.799 22.4255 128.976 23.0511C130.154 23.6755 131.537 23.9878 133.122 23.9878C134.135 23.9878 135.087 23.8444 135.979 23.56C136.871 23.2744 137.664 22.9078 138.358 22.4578C138.661 22.2622 138.93 22.0622 139.173 21.8611L141.146 23.9844H147.06L133.748 9.18887C133.352 8.72776 133.049 8.3122 132.839 7.93887H132.845ZM135.191 18.9066C134.651 19.2255 134.007 19.3844 133.259 19.3844C132.598 19.3844 132.025 19.2633 131.541 19.0222C131.056 18.7811 130.687 18.4466 130.435 18.0189C130.181 17.5911 130.054 17.0933 130.054 16.5222C130.054 15.8211 130.22 15.2178 130.55 14.7133C130.82 14.3011 131.203 13.9566 131.694 13.6755L135.948 18.3278C135.717 18.5533 135.465 18.7466 135.192 18.9066H135.191Z" fill="#2D524A"/>
+<path d="M168.144 3.36007C166.996 2.28562 165.654 1.45896 164.119 0.88118C162.585 0.304514 160.908 0.015625 159.089 0.015625H149.436V23.9867H159.158C160.953 23.9867 162.619 23.6923 164.154 23.1045C165.69 22.5167 167.024 21.689 168.161 20.6256C169.298 19.5612 170.179 18.2934 170.805 16.8223C171.43 15.3512 171.743 13.7445 171.743 12.0012C171.743 10.2578 171.43 8.6234 170.805 7.1634C170.18 5.7034 169.293 4.43673 168.145 3.36118L168.144 3.36007ZM165.365 15.9056C164.773 17.0156 163.932 17.8578 162.84 18.4356C161.749 19.0123 160.475 19.3012 159.021 19.3012H154.791V4.66785H159.021C160.476 4.66785 161.743 4.96229 162.823 5.55007C163.903 6.13896 164.744 6.97673 165.348 8.0634C165.95 9.15007 166.251 10.4523 166.251 11.9678C166.251 13.4834 165.955 14.7967 165.365 15.9056Z" fill="#2D524A"/>
+<path d="M215.949 11.181C215.26 9.98096 214.311 9.04208 213.104 8.36541C211.898 7.68874 210.505 7.34985 208.925 7.34985C207.346 7.34985 205.843 7.70985 204.55 8.43096C203.255 9.15096 202.229 10.1387 201.474 11.3943C200.717 12.651 200.338 14.0743 200.338 15.6687C200.338 17.2632 200.722 18.6932 201.49 19.9599C202.257 21.2265 203.315 22.2143 204.665 22.9232C206.014 23.6321 207.555 23.9876 209.288 23.9876C210.626 23.9876 211.855 23.7576 212.974 23.2998C214.092 22.841 215.046 22.1543 215.835 21.2365L213.073 18.4865C212.59 19.0332 212.03 19.441 211.395 19.7143C210.759 19.9876 210.046 20.1243 209.257 20.1243C208.401 20.1243 207.659 19.9443 207.035 19.5843C206.41 19.2243 205.927 18.7121 205.587 18.0443C205.474 17.8232 205.381 17.5854 205.307 17.3354L213.07 17.3165L216.757 17.3076C216.846 16.8932 216.906 16.5276 216.939 16.211C216.972 15.8943 216.989 15.5943 216.989 15.3099C216.989 13.7599 216.642 12.3843 215.952 11.1832L215.949 11.181ZM205.305 13.8932C205.373 13.6632 205.455 13.4454 205.553 13.2443C205.871 12.5899 206.32 12.0821 206.903 11.721C207.483 11.361 208.17 11.181 208.959 11.181C209.703 11.181 210.335 11.3399 210.851 11.6565C211.366 11.9743 211.755 12.4321 212.018 13.0332C212.129 13.2854 212.217 13.5665 212.285 13.8743L205.307 13.8943L205.305 13.8932Z" fill="#2D524A"/>
+<path d="M176.844 0.373291C176.055 0.373291 175.401 0.635513 174.886 1.15885C174.37 1.68218 174.114 2.33774 174.114 3.12329C174.114 3.90885 174.371 4.53773 174.886 5.07218C175.401 5.60662 176.055 5.8744 176.844 5.8744C177.633 5.8744 178.28 5.60662 178.785 5.07218C179.289 4.53773 179.542 3.88774 179.542 3.12329C179.542 2.35885 179.288 1.68218 178.785 1.15885C178.279 0.634402 177.633 0.373291 176.844 0.373291Z" fill="#2D524A"/>
+<path d="M179.344 8.07007H174.31V23.9878H179.344V8.07007Z" fill="#2D524A"/>
+<path d="M189.94 7.74219C185.506 7.74219 181.912 11.3211 181.912 15.7333V23.9866H186.93V15.7333C186.93 14.0811 188.281 12.7366 189.94 12.7366C191.599 12.7366 192.95 14.0811 192.95 15.7333V23.9866H197.968V15.7333C197.968 11.32 194.373 7.74219 189.94 7.74219Z" fill="#2D524A"/>
+</svg>
+             </a>
+             
+            </div>
+            
+        </div>
+
+        <div class="search-bar">
+            <div class="search-icon">
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24.4064 26L14.9078 16.5012C14.1516 17.1255 13.282 17.6141 12.299 17.967C11.316 18.3199 10.2991 18.4963 9.24828 18.4963C6.66346 18.4963 4.47587 17.6014 2.68552 15.8116C0.895174 14.0218 0 11.8347 0 9.25042C0 6.66639 0.894922 4.47858 2.68477 2.687C4.47461 0.895665 6.66169 0 9.24602 0C11.8301 0 14.0179 0.89516 15.8095 2.68548C17.6009 4.4758 18.4966 6.66336 18.4966 9.24815C18.4966 10.3282 18.3153 11.3597 17.9529 12.3427C17.5902 13.3257 17.1064 14.1807 16.5014 14.9076L26 24.406L24.4064 26ZM9.24828 16.2282C11.1969 16.2282 12.8474 15.552 14.1997 14.1994C15.5522 12.8472 16.2284 11.1968 16.2284 9.24815C16.2284 7.29954 15.5522 5.6491 14.1997 4.29685C12.8474 2.94434 11.1969 2.26809 9.24828 2.26809C7.29964 2.26809 5.64919 2.94434 4.29691 4.29685C2.94438 5.6491 2.26812 7.29954 2.26812 9.24815C2.26812 11.1968 2.94438 12.8472 4.29691 14.1994C5.64919 15.552 7.29964 16.2282 9.24828 16.2282Z" fill="#B3B3B3"/>
+                </svg>
+            </div>
+            <input type="text" class="search-input" id="search-input" placeholder="What do you want to play?">
+        </div>
+
+        <div class="main-content">
             <div class="now-playing">
-                <div class="track-info">
-                    <h3>Now Playing:</h3>
-                    <h4 id="track-name">Loading...</h4>
-                    <p id="artist-name"></p>
-                    <div class="search-container">
-                        <input type="text" id="search-input" placeholder="Search for a song...">
-                        <button id="search-btn" class="btn">Search</button>
+               <div class="playing-now">Now Playing</div>
+                <div class="now-playing-content">
+           
+                    <div class="album-art">
+                        <img id="now-image" src="https://via.placeholder.com/200" alt="Album Art">
+                    </div>
+                    <div class="track-info">
+                        <div>
+                            <h1 id="now-title">Nothing Playing</h1>
+                            <div class="artist" id="now-artist">-</div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="now-progress">
+                                    <div class="progress-handle"></div>
+                                </div>
+                            </div>
+                            <div class="time-info">
+                                <span id="now-current">0:00</span>
+                                <span id="now-duration">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="up-next">
+                <h2>Up Next</h2>
+                <div id="next-container">
+                    <div class="next-track">
+                        <img src="https://via.placeholder.com/60" alt="Next Track">
+                        <div class="next-track-info">
+                            <h3>Queue is empty</h3>
+                            <p>-</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-       
-
-        <div id="results" class="results-container"></div>
-    </div>
-    <div class="rules-container">
-        <h2 class="rules-title">🎵 Jukebox Rules – Let the Music Play Fairly! 🎶</h2>
-        <div class="rules-grid">
-            <div class="rule-item">
-                <h3>Stick to the Vibe</h3>
-                <p>Only English and Arabic songs, please—let’s keep the mood fun and familiar for everyone.</p>
-            </div>            
-            <div class="rule-item">
-                <h3>One Song at a Time</h3>
-                <p>Let everyone have a chance—please queue only one song at a time.</p>
-            </div>
-            <div class="rule-item">
-                <h3>Volume is Set</h3>
-                <p>The jukebox volume is pre-set by management.</p>
-            </div>
-            <div class="rule-item">
-                <h3>Keep It Clean</h3>
-                <p>No explicit content or offensive language. Let's keep the vibe friendly for all ages.</p>
-            </div>
-            <div class="rule-item">
-                <h3>Respect the Queue</h3>
-                <p>Songs play in the order they were added.</p>
-            </div>
-            <div class="rule-item">
-                <h3>Request Limits</h3>
-                <p>1 song per person every 5 minutes to keep it fair for everyone.</p>
-            </div>
-            <div class="rule-item">
-                <h3>Management Control</h3>
-                <p>We reserve the right to skip or mute any song if it disrupts the environment.</p>
-            </div>
-
-            <div class="rule-item">
-                <h3>Enjoy & Share the Vibe</h3>
-                <p>Feel free to sing along or vibe quietly—but no shouting over others' experiences.</p>
-            </div>
+        <div class="results" id="results">
+           
         </div>
     </div>
-</div>
+
     <script>
-        const searchBtn = document.getElementById('search-btn');
+        // Cooldown system
+       let lastAddTime = Number(localStorage.getItem('lastAddTime')) || 0;
+const COOLDOWN_MINUTES = 10;
+
+function getCooldownRemaining() {
+    const elapsed = Date.now() - lastAddTime;
+    const remaining = (COOLDOWN_MINUTES * 60 * 1000) - elapsed;
+    return remaining > 0 ? remaining : 0;
+}
+
+function showCooldownModal() {
+    const remaining = getCooldownRemaining();
+    const minutes = Math.floor(remaining / (60 * 1000));
+    const seconds = Math.ceil((remaining % (60 * 1000)) / 1000);
+
+    let timeString = '';
+    if (minutes > 0) {
+        timeString = `${minutes}m ${seconds}s`;
+    } else {
+        timeString = `${seconds}s`;
+    }
+
+    document.getElementById('cooldownTime').textContent = timeString;
+    document.getElementById('cooldownModal').classList.add('active');
+}
+
+function closeCooldownModal() {
+    document.getElementById('cooldownModal').classList.remove('active');
+}
+
+function canAddSong() {
+    return getCooldownRemaining() === 0;
+}
+        // SEARCH FUNCTIONALITY
         const searchInput = document.getElementById('search-input');
         const resultsDiv = document.getElementById('results');
 
-        // Handle search
-        searchBtn.addEventListener('click', performSearch);
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') performSearch();
         });
 
-       // Replace the existing performSearch function
-function performSearch() {
-    const query = searchInput.value.trim();
-    if (!query) {
-    showPopup("Please enter a song or artist name to search");
-        searchInput.focus();
-        return;
-    }
-    resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
-
-    fetch(`/search?q=${encodeURIComponent(query)}&limit=50`) // Increased limit to 50
-        .then(response => response.json())
-        .then(tracks => {
-            if (tracks.error) {
-                resultsDiv.innerHTML = `<div class="error">${tracks.error}</div>`;
-                return;
+        searchInput.addEventListener('input', (e) => {
+            if (e.target.value.trim() === '') {
+                // Show main content when search is empty
+                document.querySelector('.main-content').classList.remove('hidden');
+                resultsDiv.innerHTML = '';
             }
-
-            if (tracks.length === 0) {
-                resultsDiv.innerHTML = '<div class="no-results">No results found</div>';
-                return;
-            }
-
-            resultsDiv.innerHTML = tracks.map(track => `
-                <div class="track">
-                    ${track.image ? `<img src="${track.image}" alt="${track.name}" class="track-image">` : ''}
-                    <div class="track-info">
-                        <h3>${track.name}</h3>
-                        <p>${track.artist}</p>
-                    </div>
-                    <button class="queue-btn" data-uri="${track.uri}">Queue</button>
-                </div>
-            `).join('');
-
-            // Add lazy loading for images
-            const images = resultsDiv.getElementsByTagName('img');
-            for (let img of images) {
-                img.loading = 'lazy';
-            }
-        })
-        .catch(error => {
-            resultsDiv.innerHTML = `<div class="error">${error.message}</div>`;
         });
-}
 
-        // Handle queue button clicks
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) {
+                // Show main content when search is empty
+                document.querySelector('.main-content').classList.remove('hidden');
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            // Hide main content when searching
+            document.querySelector('.main-content').classList.add('hidden');
+            resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+
+            fetch(`/search?q=${encodeURIComponent(query)}&limit=50`)
+                .then(res => res.json())
+                .then(tracks => {
+                    if (!tracks.length) {
+                        resultsDiv.innerHTML = '<div class="empty-state">No results found</div>';
+                        return;
+                    }
+
+                    resultsDiv.innerHTML = tracks.map(track => `
+                        <div class="track">
+                            <img src="${track.image || 'https://via.placeholder.com/80'}" alt="${track.name}" class="track-image">
+                            <div class="track-info">
+                                <h3>${track.name}</h3>
+                                <p>${track.artist}</p>
+                            </div>
+                            <button class="queue-btn" data-uri="${track.uri}">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                })
+                .catch(err => {
+                    resultsDiv.innerHTML = '<div class="empty-state">Search failed. Please try again.</div>';
+                    console.error('Search error:', err);
+                });
+        }
+
         resultsDiv.addEventListener('click', (e) => {
-            if (e.target.classList.contains('queue-btn')) {
-                const trackUri = e.target.getAttribute('data-uri');
-                queueTrack(trackUri, e.target);
+            if (e.target.closest('.queue-btn')) {
+                const button = e.target.closest('.queue-btn');
+                const uri = button.getAttribute('data-uri');
+                
+                if (!canAddSong()) {
+                    showCooldownModal();
+                    return;
+                }
+                
+                queueTrack(uri, button);
             }
         });
 
-       // Replace the existing queueTrack function with this version
-async function queueTrack(uri, button) {
-    if (!canQueueTrack()) {
-        showPopup(getTimeLeftMessage());
-        return;
-    }
-
-    const originalText = button.textContent;
-    button.textContent = 'Queuing...';
+      async function queueTrack(uri, button) {
+    const original = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     button.disabled = true;
 
     try {
-        const response = await fetch('/queue', {
+        const res = await fetch('/queue', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ uri })
         });
 
-        const result = await response.json();
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Queue failed');
 
-        if (!response.ok) {
-            throw new Error(result.error || 'Queue failed');
-        }
+        // Set cooldown and persist it
+        lastAddTime = Date.now();
+        localStorage.setItem('lastAddTime', lastAddTime);
 
-        incrementQueueCount();
-
-        button.textContent = '✓ Queued!';
-        button.classList.add('success');
-        button.disabled = true;
-        // Remove the setTimeout that was resetting the button
-
-    } catch (error) {
-        button.textContent = 'Failed!';
-        button.classList.add('error');
+        button.innerHTML = '<i class="fas fa-check"></i>';
         setTimeout(() => {
-            button.textContent = originalText;
+            button.innerHTML = original;
             button.disabled = false;
-            button.classList.remove('error');
         }, 2000);
-
-        showPopup(error.message);
-    }
-}
-
-        const QUEUE_LIMIT = 1;
-const LIMIT_DURATION_MINUTES = 5;
-
-// Store queue data in localStorage
-function getQueueData() {
-    return JSON.parse(localStorage.getItem('queueData') || '{}');
-}
-
-function setQueueData(data) {
-    localStorage.setItem('queueData', JSON.stringify(data));
-}
-
-// Check how many songs user has queued
-function getQueueCount() {
-    const data = getQueueData();
-    return data.count || 0;
-}
-
-// Save a new queued song and time
-function incrementQueueCount() {
-    const data = getQueueData();
-    const now = Date.now();
-    const count = (data.count || 0) + 1;
-    const firstTime = data.firstTime || now;
-
-    setQueueData({ count, firstTime });
-}
-
-// Check if user can queue
-function canQueueTrack() {
-    const data = getQueueData();
-    const now = Date.now();
-
-    if (!data.firstTime) return true;
-
-    const minutesPassed = (now - data.firstTime) / 60000;
-    if (minutesPassed >= LIMIT_DURATION_MINUTES) {
-        // Reset after 30 minutes
-        localStorage.removeItem('queueData');
-        return true;
-    }
-
-    return getQueueCount() < QUEUE_LIMIT;
-}
-
-// Message to show in popup
-function getTimeLeftMessage() {
-    const data = getQueueData();
-    const now = Date.now();
-    const minutesPassed = (now - data.firstTime) / 60000;
-    const minutesLeft = Math.ceil(LIMIT_DURATION_MINUTES - minutesPassed);
-    return `Please wait ${minutesLeft} minute(s) before adding more songs.`;
-}
-
-// Main function
-async function queueTrack(uri, button) {
-    if (!canQueueTrack()) {
-        showPopup(getTimeLeftMessage());
-        return;
-    }
-
-    const originalText = button.textContent;
-    button.textContent = 'Queuing...';
-    button.disabled = true;
-
-    try {
-        const response = await fetch('/queue', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uri })
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.error || 'Queue failed');
-        }
-
-        incrementQueueCount();
-
-        button.textContent = '✓ Queued!';
-        button.classList.add('success');
-        setTimeout(() => {
-            button.textContent = originalText;
-            button.disabled = false;
-            button.classList.remove('success');
-        }, 2000);
-
-    } catch (error) {
-        button.textContent = 'Failed!';
-        button.classList.add('error');
-        setTimeout(() => {
-            button.textContent = originalText;
-            button.disabled = false;
-            button.classList.remove('error');
-        }, 2000);
-
-        showPopup(error.message);
-    }
-}        
-        
-    </script>
- 
-<div id="popup" style="
-    display: none;
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #fbeee0;
-    border: 2px solid #422800;
-    border-radius: 30px;
-    box-shadow: #422800 4px 4px 0 0;
-    color: #422800;
-    padding: 1.5rem 2rem;
-    z-index: 9999;
-    max-width: 90%;
-    text-align: center;
-    font-family: 'Luckiest Guy', sans-serif;
-">
-    <div id="popup-message" style="font-size: 1.1rem; margin-bottom: 10px;"></div>
-    <div id="popup-timer" style="font-size: 2rem; font-weight: bold;"></div>
-</div>
-
-<script>
-     async function fetchCurrentTrack() {
-    try {
-        const res = await fetch('/current');
-        const data = await res.json();
-
-        const trackName = document.getElementById('track-name');
-        const artistName = document.getElementById('artist-name');
-
-        if (data.message) {
-            trackName.textContent = data.message;
-            artistName.textContent = '';
-            return;
-        }
-
-        trackName.textContent = data.name || 'No track playing';
-        artistName.textContent = data.artist || '';
-
     } catch (err) {
-        console.error('Error fetching current track:', err);
-        const trackName = document.getElementById('track-name');
-        trackName.textContent = 'Nothing Playing Right Now';
+        alert(err.message);
+        button.innerHTML = original;
+        button.disabled = false;
     }
 }
+        let lastProgress = 0;
+let lastDuration = 0;
+let lastUpdateTime = Date.now();
+let isPlaying = false;
 
-function showPopup(message) {
-const popup = document.getElementById('popup');
-popup.textContent = message;
-popup.style.display = 'block';
+function updateProgressBarSmooth() {
+    if (!isPlaying) return;
+    const now = Date.now();
+    const elapsed = now - lastUpdateTime;
+    let currentProgress = lastProgress + elapsed;
+    if (currentProgress > lastDuration) currentProgress = lastDuration;
 
-setTimeout(() => {
-    popup.style.display = 'none';
-}, 1000);
+    const bar = document.getElementById('now-progress');
+    const currentTime = document.getElementById('now-current');
+    const durationTime = document.getElementById('now-duration');
+
+    bar.style.width = `${(currentProgress / lastDuration) * 100}%`;
+
+    const format = ms => {
+        const mins = Math.floor(ms / 60000);
+        const secs = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+        return `${mins}:${secs}`;
+    };
+
+    currentTime.textContent = format(currentProgress);
+    durationTime.textContent = format(lastDuration);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-            const icons = [
-              'fa-dice-one', 'fa-dice-two', 'fa-dice-three', 'fa-dice-four', 'fa-dice-five', 'fa-dice-six',
-                'fa-chess', 'fa-puzzle-piece', 'fa-chess-knight', 'fa-chess-queen', 'fa-trophy', 
-                'fa-gamepad', 'fa-chess-board', 'fa-dice',
-                'fa-burger', 'fa-pizza-slice', 'fa-ice-cream', 'fa-cookie', 'fa-bacon',
-                'fa-bread-slice', 'fa-cheese', 'fa-egg', 'fa-cookie-bite',
-                'fa-mug-hot', 'fa-coffee', 'fa-glass-water', 'fa-martini-glass',
-                'fa-wine-glass', 'fa-beer-mug-empty', 'fa-whiskey-glass',
-                'fa-utensils', 'fa-plate-wheat', 'fa-kitchen-set', 'fa-bell-concierge',
-                'fa-fire-burner'
-            ];
+setInterval(updateProgressBarSmooth, 1000);
+// NOW PLAYING FROM /current
+       function fetchNowPlaying() {
+    fetch('/current')
+        .then(res => res.json())
+        .then(data => {
+            const title = document.getElementById('now-title');
+            const artist = document.getElementById('now-artist');
+            const image = document.getElementById('now-image');
+            const bar = document.getElementById('now-progress');
+            const currentTime = document.getElementById('now-current');
+            const durationTime = document.getElementById('now-duration');
 
-            for (let i = 0; i < 40; i++) {
-                const iconWrapper = document.createElement('div');
-                const sizeClass = Math.random() < 0.5 ? 'large' : Math.random() < 0.10 ? 'small' : '';
-                iconWrapper.className = `background-icon ${sizeClass}`;
+            if (!data || data.message || !data.name) {
+                title.textContent = 'Nothing Playing';
+                artist.textContent = '-';
+                image.src = 'https://via.placeholder.com/200';
+                bar.style.width = '0%';
+                currentTime.textContent = '0:00';
+                durationTime.textContent = '0:00';
+                isPlaying = false;
+                return;
+            }
 
-                const left = Math.random() * 95;
-                const top = Math.random() * 95;
-                const rotate = Math.random() * 360;
-                const scale = 1.0 + Math.random() * 0.8;
+            title.textContent = data.name;
+            artist.textContent = data.artist;
+            image.src = data.image || 'https://via.placeholder.com/200';
 
-                iconWrapper.style.left = `${left}%`;
-                iconWrapper.style.top = `${top}%`;
-                iconWrapper.style.transform = `rotate(${rotate}deg) scale(${scale})`;
+            lastProgress = data.progress_ms;
+            lastDuration = data.duration_ms;
+            lastUpdateTime = Date.now();
+            isPlaying = true;
 
-                const icon = document.createElement('i');
-                icon.className = `fas ${icons[Math.floor(Math.random() * icons.length)]}`;
-                iconWrapper.appendChild(icon);
+            bar.style.width = `${(lastProgress / lastDuration) * 100}%`;
 
-                document.body.appendChild(iconWrapper);
+            const format = ms => {
+                const mins = Math.floor(ms / 60000);
+                const secs = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+                return `${mins}:${secs}`;
+            };
+
+            currentTime.textContent = format(lastProgress);
+            durationTime.textContent = format(lastDuration);
+        })
+        .catch(err => {
+            console.error('Now playing error:', err);
+        });
+}
+
+        // UP NEXT FROM /queue-spotify
+        async function loadQueue() {
+            try {
+                const response = await fetch('/queue-spotify');
+                if (!response.ok) throw new Error("Failed to fetch queue");
+                const data = await response.json();
+
+                const container = document.getElementById('next-container');
+
+                if (data.queue && data.queue.length > 0) {
+                    // Show up to 10 songs in queue
+                    const queueToShow = data.queue.slice(0, 10);
+                    container.innerHTML = queueToShow.map(track => `
+                        <div class="next-track">
+                            <img src="${track.image || 'https://via.placeholder.com/60'}" alt="${track.name}">
+                            <div class="next-track-info">
+                                <h3>${track.name}</h3>
+                                <p>${track.artist}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="next-track">
+                            <img src="https://via.placeholder.com/60" alt="Next Track">
+                            <div class="next-track-info">
+                                <h3>Queue is empty</h3>
+                                <p>-</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("Queue load error:", error);
+                document.getElementById('next-container').innerHTML = `
+                    <div class="next-track">
+                        <img src="https://via.placeholder.com/60" alt="Next Track">
+                        <div class="next-track-info">
+                            <h3>Failed to load queue</h3>
+                            <p>-</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Back button functionality
+        document.querySelector('.back-btn').addEventListener('click', function() {
+            console.log('Navigate back');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('cooldownModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCooldownModal();
             }
         });
-        document.addEventListener('DOMContentLoaded', function() {
-    // Add background icons
-    const icons = [
-        'fa-dice-one', 'fa-dice-two', 'fa-dice-three', 'fa-dice-four', 'fa-dice-five', 'fa-dice-six',
-        // ...existing icons...
-    ];
 
-    // Add background icons
-    for (let i = 0; i < 40; i++) {
-        // ...existing background icons code...
-    }
-
-    // Initialize current track display
-    fetchCurrentTrack();
-
-    // Set up auto-refresh for current track
-    const REFRESH_INTERVAL = 1000; // 10 seconds
-    setInterval(fetchCurrentTrack, REFRESH_INTERVAL);
-});
-</script>
-
+        // INIT
+        setInterval(fetchNowPlaying, 5000);
+        fetchNowPlaying();
+        setInterval(loadQueue, 5000);
+        loadQueue();
+    </script>
 </body>
 </html>
