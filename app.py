@@ -150,6 +150,60 @@ def search():
     except Exception as e:
         logger.error(f"Search error: {str(e)}")
         return jsonify({"error": str(e)}), 500
+@app.route('/queue-spotify')
+def get_spotify_queue():
+    access_token = get_access_token()
+    if not access_token:
+        return jsonify({"error": "Failed to authorize with Spotify"}), 500
+
+    try:
+        response = session_retry.get(
+            f"{API_BASE_URL}/me/player/queue",
+            headers={'Authorization': f"Bearer {access_token}"}
+        )
+
+        if response.status_code == 204:
+            return jsonify({"message": "No active device or queue available"}), 204
+
+        response.raise_for_status()
+        queue_data = response.json()
+
+        formatted_response = {
+            "currently_playing": None,
+            "queue": []
+        }
+
+        if queue_data.get('currently_playing'):
+            track = queue_data['currently_playing']
+            formatted_response["currently_playing"] = {
+                "name": track['name'],
+                "artist": track['artists'][0]['name'],
+                "image": track['album']['images'][0]['url'] if track['album']['images'] else None,
+                "uri": track['uri'],
+                "duration_ms": track['duration_ms'],
+                "id": track['id']
+            }
+
+        if queue_data.get('queue'):
+            formatted_response["queue"] = [
+                {
+                    "name": item['name'],
+                    "artist": item['artists'][0]['name'],
+                    "image": item['album']['images'][0]['url'] if item['album']['images'] else None,
+                    "uri": item['uri'],
+                    "duration_ms": item['duration_ms'],
+                    "id": item['id']
+                } for item in queue_data['queue']
+            ]
+
+        return jsonify(formatted_response)
+
+    except requests.exceptions.HTTPError as http_err:
+        logger.error(f"HTTP error getting queue: {http_err}")
+        return jsonify({"error": "Failed to get queue", "details": str(http_err)}), 500
+    except Exception as e:
+        logger.error(f"Queue retrieval error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/queue', methods=['POST'])
 def queue_track():
