@@ -10,35 +10,57 @@
             min-height: 100vh;
             padding: 20px;
         }
+  .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
 
         .header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             margin-bottom: 30px;
+            gap: 20px;
             position: relative;
         }
 
-       .back-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 8px;
-    transition: background-color 0.2s;
-    color: #333;
-    text-decoration: none; /* Remove underline */
-}
-
-        .back-btn:hover {
-            background-color: rgba(0,0,0,0.1);
+          .back-arrow {
+            position: absolute;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
         }
+
+        .back-arrow:hover {
+            color: #4ade80;
+        }
+
+         .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-top: 30px;
+         
+        }
+      .logo svg {
+    width: 420px; /* or any desired width */
+    height: auto;
+    max-width: 100%;
+}
+       
+
+        .logo-icon {
+            margin-right: 8px;
+        }
+
   .playing-now {
             text-align: center;
             font-size: 20px;
@@ -49,18 +71,7 @@
 
         }
 
-        .logo {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-
+      
         .profile-btn {
             width: 40px;
             height: 40px;
@@ -491,6 +502,16 @@
                 position: absolute;
                 right: 0;
             }
+                        .logo svg {
+    width: 250px; /* or any desired width */
+    height: auto;
+    max-width: 100%;
+}
+ .logo {
+          
+            margin-top: 10px;
+         
+        }
         }
 
         /* Custom scrollbar */
